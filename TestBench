@@ -1,0 +1,45 @@
+module uart_tb;
+
+reg clk = 0;
+reg reset;
+reg start;
+reg [7:0] data;
+wire tx;
+wire [7:0] rx_data;
+wire done;
+
+// TX
+uart_tx tx_inst (
+    .clk(clk),
+    .reset(reset),
+    .start(start),
+    .data_in(data),
+    .tx(tx),
+    .busy()
+);
+
+// RX
+uart_rx rx_inst (
+    .clk(clk),
+    .reset(reset),
+    .rx(tx),
+    .data_out(rx_data),
+    .done(done)
+);
+
+// Clock
+always #5 clk = ~clk;
+
+initial begin
+    reset = 1;
+    start = 0;
+    data = 8'b11001100;
+
+    #10 reset = 0;
+    #10 start = 1;
+    #10 start = 0;
+
+    #300 $finish;
+end
+
+endmodule
